@@ -1,0 +1,20 @@
+{
+    "name":"bonuscred/sql-migration",
+    "description":"SQL Database Migrator",
+    "type":"library",
+    "license":"GPL-3.0-or-later",
+    "authors":[
+      {
+        "name":"Daniel Franklin",
+        "email": "daniel@bonuspago.com.br"
+      }
+    ],
+    "autoload":{
+      "psr-4":{
+        "SqlMigration\\": "src/"
+      }
+    },
+    "require":{
+      "php": ">=8.0"
+    }
+  }
