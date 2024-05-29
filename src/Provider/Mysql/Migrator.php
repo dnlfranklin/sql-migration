@@ -312,7 +312,7 @@ final class Migrator implements MigratorExtension{
                             $column_sql.= $column->zerofill ? ' zerofill' : '';
                             $column_sql.= $column->nullable ? '' : ' NOT NULL';
                             $column_sql.= $column->auto_increment ? ' AUTO_INCREMENT' : '';
-                            $column_sql.= is_null($column->default) ? '': " DEFAULT '{$column->default}'";
+                            $column_sql.= is_null($column->default) ? '': " DEFAULT ".self::formatConstantValue($column->default);
 
                             $column_keys[] = $column_sql;
                         }
@@ -364,7 +364,8 @@ final class Migrator implements MigratorExtension{
                         $column_sql.= $column->zerofill ? ' zerofill' : '';
                         $column_sql.= $column->nullable ? ' NULL' : ' NOT NULL';
                         $column_sql.= $column->auto_increment ? ' AUTO_INCREMENT' : '';
-                        $column_sql.= is_null($column->default) ? ';': " DEFAULT '{$column->default}';";
+                        $column_sql.= is_null($column->default) ? '': " DEFAULT ".self::formatConstantValue($column->default);
+                        $column_sql.= ';';
 
                         $sql['COLUMN'][] = $column_sql;
                         break;
@@ -488,6 +489,18 @@ final class Migrator implements MigratorExtension{
         }finally{
             return $sql_log;
         }
+    }
+
+    private static function formatConstantValue(string $value){
+        $constant_values = [
+            'CURRENT_TIMESTAMP'
+        ];
+
+        if(in_array(strtoupper($value), $constant_values)){
+            return $value;
+        }
+
+        return "'{$value}'";            
     }
 
 }
