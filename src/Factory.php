@@ -2,8 +2,10 @@
 
 namespace SqlMigration;
 
+use SqlMigration\Core\Comparator;
 use SqlMigration\Core\Connector;
-use SqlMigration\Core\Differ;
+use SqlMigration\Core\Executor;
+use SqlMigration\Core\Thresher;
 
 class Factory{
 
@@ -28,41 +30,49 @@ class Factory{
         
         $migrator = new $provider($this->connector, $migration->up());
 
-        $differ = new Differ($migration->up(), $migrator->map());
+        $differ = Comparator::compare($migration->up(), $migrator->map());
         
-        $diffs = [];
-
-        foreach($differ->analyze() as $diff){
-            if($diff['action']){
-                $diffs[] = $diff['action'].' '.$diff['title'];
-            }
-        }
-
-        return $diffs;
+        return $differ->get();
     }
 
-    public function getSQL(Migration $migration, bool $migrate_data = false):Array {
+    public function getSQL(Migration $migration, bool $trash = false):Array {
         $provider = $this->provider;
         
         $migrator = new $provider($this->connector, $migration->up());    
         
-        $sql = [];
-
-        foreach($migrator->sqlInstructions($migrate_data) as $group){
-            foreach($group as $cmd){
-                $sql[]= $cmd;
-            }
+        if($trash){
+            $differ = Thresher::clean($migration->up(), $migrator->map());
+        }
+        else{
+            $differ = Comparator::compare($migration->up(), $migrator->map());
         }
         
-        return $sql;
+        $instruction = $differ->inject($migrator->getInstruction());
+
+        return $instruction->getSql();
     }
 
-    public function execute(Migration $migration, bool $migrate_data = false):Array {
+    public function execute(Migration $migration):Array {
         $provider = $this->provider;
         
         $migrator = new $provider($this->connector, $migration->up());    
         
-        return $migrator->migrate($migrate_data);
+        $differ = Comparator::compare($migration->up(), $migrator->map());
+        
+        $instruction = $differ->inject($migrator->getInstruction());
+
+        $executor = new Executor($this->connector);
+        $executables = $instruction->getExecutables();
+
+        foreach($executables as $executable){
+            $executor->execute($executable);
+
+            if(!$executable->hasSuccess()){
+                break;
+            }
+        }
+
+        return $executables;
     }
 
 }

@@ -31,6 +31,12 @@ class Schema{
         return $this;
     }
 
+    public function dropView(string $view_name):self {
+        $this->drop->view($view_name);        
+
+        return $this;
+    }
+
     public function dropColumn(string $table_name, string $column_name):self {
         $this->drop->column($table_name, $column_name);        
 
@@ -62,7 +68,7 @@ class Schema{
     }
 
     public function newData(Data $data):self {
-        $this->data[] = $data;
+        $this->data[$data->table_name] = $data;
 
         return $this;
     }

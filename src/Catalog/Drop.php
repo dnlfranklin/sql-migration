@@ -8,6 +8,7 @@ class Drop{
     private $columns = [];
     private $keys = [];
     private $fks = [];
+    private $views = [];
 
     public function __get($prop){
         if(property_exists($this, $prop)){
@@ -18,6 +19,12 @@ class Drop{
     public function table(string $table):void {
         $this->tables[] = [
             'name' => $table
+        ];
+    }
+
+    public function view(string $view):void {
+        $this->views[] = [
+            'name' => $view
         ];
     }
 

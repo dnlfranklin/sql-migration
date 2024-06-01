@@ -3,13 +3,12 @@
 namespace SqlMigration\Extension;
 
 use SqlMigration\Catalog\Schema;
+use SqlMigration\Core\Instruction;
 
 interface MigratorExtension{
     
     public function map():Schema|null;
 
-    public function sqlInstructions(bool $migrate_data = false):Array;
-    
-    public function migrate(bool $migrate_data = false):Array;
+    public function getInstruction():Instruction;
 
 }
