@@ -55,13 +55,19 @@ class Factory{
     public function execute(Migration $migration):Array {
         $provider = $this->provider;
         
-        $migrator = new $provider($this->connector, $migration->up());    
+        $schema_up = $migration->up();
+
+        $migrator = new $provider($this->connector, $schema_up);    
         
-        $differ = Comparator::compare($migration->up(), $migrator->map());
+        $differ = Comparator::compare($schema_up, $migrator->map());
         
         $instruction = $differ->inject($migrator->getInstruction());
 
-        $executor = new Executor($this->connector);
+        $executor = new Executor(
+            $this->connector,
+            $schema_up->foreign_key_check
+        );
+        
         $executables = $instruction->getExecutables();
 
         foreach($executables as $executable){

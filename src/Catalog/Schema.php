@@ -11,6 +11,7 @@ class Schema{
     private $tables = [];
     private $views = [];
     private $data = [];
+    private $foreign_key_check = true;
 
     public function __construct(string $name, string $charset = null, string $collation = null){
         $this->name = $name;
@@ -72,5 +73,9 @@ class Schema{
 
         return $this;
     }
+
+    public function disableForeignKeyCheck(){
+        $this->foreign_key_check = false;
+    }    
     
 }   
