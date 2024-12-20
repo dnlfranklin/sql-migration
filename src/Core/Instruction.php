@@ -103,11 +103,11 @@ class Instruction{
     public function createSchema(){
         $sql_create = "CREATE SCHEMA `{$this->schema->name}`";
 
-        if(!empty($this->schema->charset)){
+        if(!is_null($this->schema->charset)){
             $sql_create.= " DEFAULT CHARACTER SET {$this->schema->charset}";
         }       
 
-        if(!empty($this->schema->collation)){
+        if(!is_null($this->schema->collation)){
             $sql_create.= " DEFAULT COLLATE {$this->schema->collation}";
         }
         
