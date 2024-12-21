@@ -46,6 +46,21 @@ class Differ{
         if(!in_array($catalog, self::CATALOG)){
             throw new \Exception('Invalid catalog item');
         }
+
+        if($expected_value == $current_value){
+            $action = null;
+        }
+        else if(is_null($current_value)){
+            $action = 'CREATE';
+        }
+        else{
+            if($catalog == 'DATA'){
+                $action = unserialize($expected_value) == unserialize($current_value) ? null : 'UPDATE';
+            }
+            else{
+                $action = 'UPDATE';
+            }
+        }
         
         $this->diffs[] = [
             'title' => $title,
@@ -54,7 +69,7 @@ class Differ{
             'parent' => $parent,
             'expected' => $expected_value,    
             'current' => $current_value,
-            "action" => $expected_value == $current_value ? null : ($current_value ? 'UPDATE' : 'CREATE'),
+            "action" => $action,
         ];                
     }
 

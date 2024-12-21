@@ -272,6 +272,8 @@ class Instruction{
 
         $format_value = function($value){
             if(is_string($value)){
+                $value = addslashes($value);
+  
                 return "'{$value}'";
             }
             else if(is_null($value)){
