@@ -19,7 +19,7 @@ final class InformationView{
                 information_schema.tables t 
             LEFT JOIN 
                 information_schema.COLLATION_CHARACTER_SET_APPLICABILITY ccsa 
-                    ON CCSA.collation_name = t.table_collation 
+                    ON ccsa.collation_name = t.table_collation 
             WHERE 
                 table_schema = ? and table_type = ?');
         $stmt->bindValue(1, $schema_name);  
